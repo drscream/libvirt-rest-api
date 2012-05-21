@@ -26,18 +26,25 @@ app.get('/list', function(req, res) {
 	names = new Array();
 	console.log('hypervisor.getActiveDomains(): ' + hypervisor.getActiveDomains());
 	for (ad in hypervisor.getActiveDomains()) {
-		name = hypervisor.lookupDomainById(hypervisor.getActiveDomains()[ad]).getName();
-		names[names.length] = { id : hypervisor.getActiveDomains()[ad], name : name, online: true };
+		domain = hypervisor.lookupDomainById(hypervisor.getActiveDomains()[ad]);
+		names[names.length] = { 
+			uuid : domain.getUUID(), 
+			name : domain.getName(), 
+			online: true };
 	}
 	console.log('hypervisor.getDefinedDomains(): ' + hypervisor.getDefinedDomains());
+
 	for (dd in hypervisor.getDefinedDomains()) {
-		name = hypervisor.lookupDomainByName(hypervisor.getDefinedDomains()[dd]).getName();
-		names[names.length] = { id : hypervisor.getDefinedDomains()[dd], name : name, online: false };
+		domain = hypervisor.lookupDomainByName(hypervisor.getDefinedDomains()[dd]);
+		names[names.length] = { 
+			uuid : domain.getUUID(),
+			name : domain.getName(),
+			online: false };
 	}
 	res.send(names);
 });
-app.get('/list/:id', function(req, res) {
-	domain = hypervisor.lookupDomainById(parseInt(req.params.id));
+app.get('/list/:uuid', function(req, res) {
+	domain = hypervisor.lookupDomainByUUID(parseInt(req.params.uuid));
 	domainInfo = domain.getInfo();
 	domainInfo.name = domain.getName();
 	
@@ -49,8 +56,8 @@ app.get('*', function(req, res){
 });
 
 // PUT
-app.put('/domain/:id/reboot', function(req, res) {
-	domain = hypervisor.lookupDomainById(parseInt(req.params.id));
+app.put('/domain/:uuid/reboot', function(req, res) {
+	domain = hypervisor.lookupDomainByUUID(parseInt(req.params.uuid));
 	res.send(domain.reboot());
 });
 
