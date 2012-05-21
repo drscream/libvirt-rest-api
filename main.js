@@ -57,11 +57,25 @@ app.get('*', function(req, res){
 });
 
 // PUT
+app.put('/domain/:uuid/start', function(req, res) {
+	console.log('req.params.uuid: ' + req.params.uuid);
+	domain = hypervisor.lookupDomainByUUID(req.params.uuid);
+	res.send(domain.start());
+});
 app.put('/domain/:uuid/reboot', function(req, res) {
 	console.log('req.params.uuid: ' + req.params.uuid);
-
 	domain = hypervisor.lookupDomainByUUID(req.params.uuid);
 	res.send(domain.reboot());
+});
+app.put('/domain/:uuid/shutdown', function(req, res) {
+	console.log('req.params.uuid: ' + req.params.uuid);
+	domain = hypervisor.lookupDomainByUUID(req.params.uuid);
+	res.send(domain.shutdown());
+});
+app.put('/domain/:uuid/destroy', function(req, res) {
+	console.log('req.params.uuid: ' + req.params.uuid);
+	device = hypervisor.lookupDomainByUUID(req.params.uuid);
+	res.send(device.stop());
 });
 
 app.listen(conf.port);
