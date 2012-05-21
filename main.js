@@ -22,7 +22,7 @@ var domain;
 
 // server
 // GET
-app.get('/list', function(req, res) {
+app.get('/domain', function(req, res) {
 	names = new Array();
 	
 	console.log('hypervisor.getActiveDomains(): ' + hypervisor.getActiveDomains());
@@ -44,14 +44,15 @@ app.get('/list', function(req, res) {
 	}
 	res.send(names);
 });
-app.get('/list/:uuid', function(req, res) {
-	domain = hypervisor.lookupDomainByUUID(parseInt(req.params.uuid));
+app.get('/domain/:uuid', function(req, res) {
+	domain = hypervisor.lookupDomainByUUID(req.params.uuid);
 	domainInfo = domain.getInfo();
 	domainInfo.name = domain.getName();
 	
 	if (domainInfo != null)
 		res.send(domainInfo);
 });
+
 app.get('*', function(req, res){
 	res.send('what???', 404);
 });
@@ -74,8 +75,11 @@ app.put('/domain/:uuid/shutdown', function(req, res) {
 });
 app.put('/domain/:uuid/destroy', function(req, res) {
 	console.log('req.params.uuid: ' + req.params.uuid);
-	device = hypervisor.lookupDomainByUUID(req.params.uuid);
-	res.send(device.stop());
+	domain = hypervisor.lookupDomainByUUID(req.params.uuid);
+	res.send(domain.stop());
 });
+
+// POST
+
 
 app.listen(conf.port);
