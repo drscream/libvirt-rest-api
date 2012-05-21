@@ -21,15 +21,18 @@ var hypervisor = new Hypervisor(conf.uri);
 var domain;
 
 // server
+// GET
 app.get('/list', function(req, res) {
 	names = new Array();
+	console.log('hypervisor.getActiveDomains(): ' + hypervisor.getActiveDomains());
 	for (ad in hypervisor.getActiveDomains()) {
 		name = hypervisor.lookupDomainById(hypervisor.getActiveDomains()[ad]).getName();
 		names[names.length] = { id : hypervisor.getActiveDomains()[ad], name : name, online: true };
 	}
+	console.log('hypervisor.getDefinedDomains(): ' + hypervisor.getDefinedDomains());
 	for (dd in hypervisor.getDefinedDomains()) {
-		name = hypervisor.lookupDomainById(hypervisor.getDefinedDomains()[dd]).getName();
-		names[names.length] = { id : hypervisor.getActiveDomains()[dd], name : name, online: false };
+		name = hypervisor.lookupDomainByName(hypervisor.getDefinedDomains()[dd]).getName();
+		names[names.length] = { id : hypervisor.getDefinedDomains()[dd], name : name, online: false };
 	}
 	res.send(names);
 });
@@ -40,6 +43,15 @@ app.get('/list/:id', function(req, res) {
 	
 	if (domainInfo != null)
 		res.send(domainInfo);
+});
+app.get('*', function(req, res){
+	res.send('what???', 404);
+});
+
+// PUT
+app.put('/domain/:id/reboot', function(req, res) {
+	domain = hypervisor.lookupDomainById(parseInt(req.params.id));
+	res.send(domain.reboot());
 });
 
 app.listen(conf.port);
